@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { waterLevelSchema } = require('./lib/zodSchema');
-const connection = require('./lib/mysql');
+const db = require('./lib/mysql');
 const app = express();
 
 app.use(bodyParser.json());
@@ -43,8 +43,5 @@ app.post('/waterlevel', (req, res) => {
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
-    connection.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
-        if (error) throw error;
-        console.log('The solution is: ', results[0].solution);
-    });
+    db.init();
 });
