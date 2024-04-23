@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Household {
+  householdID   Int          @id @default(autoincrement())
+  householdName String       @db.VarChar(255)
+  contactEmail  String       @unique(map: "contactEmail") @db.VarChar(255)
+  address       String       @db.VarChar(255)
+  city          String       @db.VarChar(255)
+  state         String       @db.VarChar(255)
+  country       String       @db.VarChar(255)
+  timezoneID    Int
+  gpsLatitude   Decimal      @db.Decimal(10, 8)
+  gpsLongitude  Decimal      @db.Decimal(11, 8)
+  Timezone      Timezone     @relation(fields: [timezoneID], references: [timezoneID], onDelete: NoAction, onUpdate: NoAction, map: "Household_ibfk_1")
+  SensorData    SensorData[]
+  Tank          Tank[]
+  User          User[]
+
+  @@index([timezoneID], map: "timezoneID")
+}
+
+model Sensor {
+  sensorID      Int    @id @default(autoincrement())
+  sensorName    String @db.VarChar(255)
+  sensorVersion String @db.VarChar(255)
+}
+
+model SensorData {
+  dataID           Int       @id @default(autoincrement())
+  householdID      Int
+  sensorID         String    @db.VarChar(255)
+  waterLevelLiters Int
+  timestamp        DateTime  @db.DateTime(0)
+  Household        Household @relation(fields: [householdID], references: [householdID], onDelete: NoAction, onUpdate: NoAction, map: "SensorData_ibfk_1")
+
+  @@index([householdID], map: "householdID")
+}
+
+model Tank {
+  tankID         Int       @id @default(autoincrement())
+  householdID    Int
+  capacityLiters Int
+  heightCm       Int
+  radiusCm       Int
+  Household      Household @relation(fields: [householdID], references: [householdID], onDelete: NoAction, onUpdate: NoAction, map: "Tank_ibfk_1")
+
+  @@index([householdID], map: "householdID")
+}
+
+model Timezone {
+  timezoneID     Int         @id @default(autoincrement())
+  timezoneName   String      @db.VarChar(2000)
+  timeDifference Decimal     @db.Decimal(4, 2)
+  Household      Household[]
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
+  name      String
+  password  String      @db.VarChar(1023)
+  Household Household[]
+
+  @@index([email], map: "email")
+}
