@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('./lib/mysql');
 const app = express();
-
+require('dotenv').config();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -69,8 +69,8 @@ app.post("/createHousehold", async (req, res) => {
 });
 
 
-
-app.listen(3000, () => {
+const PORT = process.env.NODE_PORT || 3000;
+app.listen(PORT, () => {
     console.log('Server is running on port 3000');
     db.init();
 });
